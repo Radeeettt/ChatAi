@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { prisma } from '../index';
+import { prisma, io } from '../index';
 import { sock } from '../whatsapp';
 import { authenticateToken } from '../middleware/auth';
 
@@ -86,11 +86,15 @@ router.post('/send/:contactId', async (req, res) => {
       }
     });
 
+    // Emit to socket so customer web page receives it in real-time
+    io.emit('new_message', { contact, message });
+
     res.json(message);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 export default router;

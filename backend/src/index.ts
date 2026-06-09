@@ -10,6 +10,7 @@ import { initAI } from './ai';
 import authRoutes from './routes/auth';
 import knowledgeRoutes from './routes/knowledge';
 import chatRoutes from './routes/chat';
+import publicChatRoutes from './routes/publicChat';
 
 dotenv.config();
 
@@ -30,6 +31,8 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/knowledge', knowledgeRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/public-chat', publicChatRoutes);
+
 
 // Socket.io Connection
 io.on('connection', (socket) => {

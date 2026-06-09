@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import KnowledgeBase from './pages/KnowledgeBase';
+import PublicChat from './pages/PublicChat';
 import Sidebar from './components/Sidebar';
 import './index.css';
 
@@ -26,6 +27,7 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/chat" element={<PublicChat />} />
       <Route 
         path="/" 
         element={
@@ -46,6 +48,7 @@ const AppRoutes = () => {
     </Routes>
   );
 };
+
 
 const App = () => {
   return (

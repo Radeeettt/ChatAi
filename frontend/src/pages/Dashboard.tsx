@@ -6,7 +6,7 @@ interface Contact {
   id: number;
   phoneNumber: string;
   name: string;
-  isAiActive: boolean;
+  isAiActive: boolean; 
   messages?: Message[];
 }
 
