@@ -7,7 +7,7 @@ import { getAIResponse } from './ai';
 
 export let sock: ReturnType<typeof makeWASocket> | null = null;
 
-export async function startWhatsApp() {
+export async function startWhatsApp(app: any) {
   const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
 
   sock = makeWASocket({
@@ -22,17 +22,20 @@ export async function startWhatsApp() {
 
     // Print QR Code to terminal (replacement for deprecated printQRInTerminal)
     if (qr) {
+      app.set('currentQR', qr);
       console.log('\n📱 Scan QR Code ini dengan WhatsApp Anda:\n');
       qrcode.generate(qr, { small: true });
     }
 
     if (connection === 'close') {
+      app.set('currentQR', null);
       const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
       console.log('WhatsApp connection closed due to', lastDisconnect?.error, ', reconnecting', shouldReconnect);
       if (shouldReconnect) {
-        startWhatsApp();
+        startWhatsApp(app);
       }
     } else if (connection === 'open') {
+      app.set('currentQR', null);
       console.log('✅ WhatsApp connection opened successfully!');
     }
   });

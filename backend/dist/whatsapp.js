@@ -44,7 +44,7 @@ const qrcode_terminal_1 = __importDefault(require("qrcode-terminal"));
 const index_1 = require("./index");
 const ai_1 = require("./ai");
 exports.sock = null;
-async function startWhatsApp() {
+async function startWhatsApp(app) {
     const { state, saveCreds } = await (0, baileys_1.useMultiFileAuthState)('auth_info_baileys');
     exports.sock = (0, baileys_1.default)({
         auth: state,
@@ -55,17 +55,20 @@ async function startWhatsApp() {
         const { connection, lastDisconnect, qr } = update;
         // Print QR Code to terminal (replacement for deprecated printQRInTerminal)
         if (qr) {
+            app.set('currentQR', qr);
             console.log('\n📱 Scan QR Code ini dengan WhatsApp Anda:\n');
             qrcode_terminal_1.default.generate(qr, { small: true });
         }
         if (connection === 'close') {
+            app.set('currentQR', null);
             const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== baileys_1.DisconnectReason.loggedOut;
             console.log('WhatsApp connection closed due to', lastDisconnect?.error, ', reconnecting', shouldReconnect);
             if (shouldReconnect) {
-                startWhatsApp();
+                startWhatsApp(app);
             }
         }
         else if (connection === 'open') {
+            app.set('currentQR', null);
             console.log('✅ WhatsApp connection opened successfully!');
         }
     });
