@@ -34,7 +34,7 @@ const PublicChat = () => {
   useEffect(() => {
     if (!session) return;
 
-    const socket = io('http://localhost:5001');
+    const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001');
 
     socket.on('new_message', (data: { contact: { id: number }, message: Message }) => {
       if (data.contact.id === session.id) {

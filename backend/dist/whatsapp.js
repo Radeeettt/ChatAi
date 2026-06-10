@@ -40,6 +40,7 @@ exports.sock = void 0;
 exports.startWhatsApp = startWhatsApp;
 const baileys_1 = __importStar(require("@whiskeysockets/baileys"));
 const pino_1 = __importDefault(require("pino"));
+const qrcode_terminal_1 = __importDefault(require("qrcode-terminal"));
 const index_1 = require("./index");
 const ai_1 = require("./ai");
 exports.sock = null;
@@ -47,12 +48,16 @@ async function startWhatsApp() {
     const { state, saveCreds } = await (0, baileys_1.useMultiFileAuthState)('auth_info_baileys');
     exports.sock = (0, baileys_1.default)({
         auth: state,
-        printQRInTerminal: true,
         logger: (0, pino_1.default)({ level: 'silent' }),
     });
     exports.sock.ev.on('creds.update', saveCreds);
     exports.sock.ev.on('connection.update', (update) => {
-        const { connection, lastDisconnect } = update;
+        const { connection, lastDisconnect, qr } = update;
+        // Print QR Code to terminal (replacement for deprecated printQRInTerminal)
+        if (qr) {
+            console.log('\n📱 Scan QR Code ini dengan WhatsApp Anda:\n');
+            qrcode_terminal_1.default.generate(qr, { small: true });
+        }
         if (connection === 'close') {
             const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== baileys_1.DisconnectReason.loggedOut;
             console.log('WhatsApp connection closed due to', lastDisconnect?.error, ', reconnecting', shouldReconnect);
@@ -61,7 +66,7 @@ async function startWhatsApp() {
             }
         }
         else if (connection === 'open') {
-            console.log('WhatsApp connection opened');
+            console.log('✅ WhatsApp connection opened successfully!');
         }
     });
     exports.sock.ev.on('messages.upsert', async (m) => {

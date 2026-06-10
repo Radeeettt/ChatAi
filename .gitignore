@@ -1,9 +1,17 @@
 # Dependencies
 node_modules/
 
-# Environment variables
+# Environment variables (JANGAN DI-COMMIT KE GITHUB!)
 .env
 .env.local
+.env.production
+
+# Build output
+dist/
+build/
+
+# WhatsApp session data (JANGAN DI-COMMIT!)
+auth_info_baileys/
 
 # Logs
 npm-debug.log*

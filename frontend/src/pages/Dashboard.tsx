@@ -27,7 +27,7 @@ const Dashboard = () => {
   useEffect(() => {
     fetchContacts();
 
-    const socket = io('http://localhost:5001');
+    const socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5001');
     
     socket.on('new_message', (data: { contact: Contact, message: Message }) => {
       // Update contacts list if new

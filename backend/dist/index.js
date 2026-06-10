@@ -18,14 +18,17 @@ const chat_1 = __importDefault(require("./routes/chat"));
 const publicChat_1 = __importDefault(require("./routes/publicChat"));
 dotenv_1.default.config();
 exports.prisma = new client_1.PrismaClient();
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
 exports.io = new socket_io_1.Server(server, {
     cors: {
-        origin: '*',
+        origin: FRONTEND_URL,
+        methods: ['GET', 'POST'],
+        credentials: true,
     },
 });
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({ origin: FRONTEND_URL, credentials: true }));
 app.use(express_1.default.json());
 // Routes
 app.use('/api/auth', auth_1.default);

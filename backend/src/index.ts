@@ -16,15 +16,19 @@ dotenv.config();
 
 export const prisma = new PrismaClient();
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
 const app = express();
 const server = http.createServer(app);
 export const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: FRONTEND_URL,
+    methods: ['GET', 'POST'],
+    credentials: true,
   },
 });
 
-app.use(cors());
+app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(express.json());
 
 // Routes

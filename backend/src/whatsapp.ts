@@ -1,6 +1,7 @@
 import makeWASocket, { useMultiFileAuthState, DisconnectReason } from '@whiskeysockets/baileys';
 import { Boom } from '@hapi/boom';
 import pino from 'pino';
+import qrcode from 'qrcode-terminal';
 import { io, prisma } from './index';
 import { getAIResponse } from './ai';
 
@@ -11,14 +12,20 @@ export async function startWhatsApp() {
 
   sock = makeWASocket({
     auth: state,
-    printQRInTerminal: true,
     logger: pino({ level: 'silent' }) as any,
   });
 
   sock.ev.on('creds.update', saveCreds);
 
   sock.ev.on('connection.update', (update) => {
-    const { connection, lastDisconnect } = update;
+    const { connection, lastDisconnect, qr } = update;
+
+    // Print QR Code to terminal (replacement for deprecated printQRInTerminal)
+    if (qr) {
+      console.log('\n📱 Scan QR Code ini dengan WhatsApp Anda:\n');
+      qrcode.generate(qr, { small: true });
+    }
+
     if (connection === 'close') {
       const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
       console.log('WhatsApp connection closed due to', lastDisconnect?.error, ', reconnecting', shouldReconnect);
@@ -26,7 +33,7 @@ export async function startWhatsApp() {
         startWhatsApp();
       }
     } else if (connection === 'open') {
-      console.log('WhatsApp connection opened');
+      console.log('✅ WhatsApp connection opened successfully!');
     }
   });
 
